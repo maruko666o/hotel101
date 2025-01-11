@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Email Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+
+        iframe {
+            flex: 1;
+            width: 100%;
+            border: none;
+        }
+
+        .email-generator {
+            height: 200px;
+            padding: 10px;
+            background-color: #1e1e1e;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-top: 1px solid #444;
+            position: relative;
+        }
+
+        .email-generator p {
+            font-size: 16px;
+            margin: 5px 0;
+        }
+
+        .email-generator button {
+            padding: 10px 20px;
+            font-size: 14px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin: 5px;
+            width: 120px; /* Set a fixed width to prevent button from moving */
+            text-align: center;
+        }
+
+        .email-generator button:disabled {
+            background-color: #666;
+            cursor: not-allowed;
+        }
+
+        .email-generator input[type="file"] {
+            margin-top: 10px;
+            display: block;
+        }
+
+        .email-display {
+            font-size: 16px;
+            font-weight: bold;
+            margin: 10px 0;
+            color: #bbb;
+            text-align: center;
+            cursor: pointer;
+        }
+
+       .back-button {
+      background-color: #81c784; /* Softer green */
+      color: #ffffff;
+      padding: 6px 12px; /* Smaller button */
+      border-radius: 8px;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 12px;
+      width: 100px; /* Smaller width */
+      text-align: center;
+      transition: background-color 0.3s ease;
+    }
+
+    .back-button:hover {
+      background-color: #66bb6a; /* Slightly darker green on hover */
+    </style>
+</head>
+<body>
+<button class="back-button" onclick="window.location.href='index.html';">Back to Home</button> <!-- Back to index.html -->
+    <iframe src="https://makers4.hothothot.workers.dev/" title="Main Interface"></iframe>
+
+    <div class="email-generator">
+        
+        <p>Email Generator</p>
+        <div class="email-display" id="generatedEmail">Your email will appear here</div>
+        <input type="file" id="fileInput" accept=".txt">
+        <button id="generateBtn">Generate</button>
+    </div>
+
+    <script>
+        // Data for domains
+        const domains = ["btcmod.com", "alliedsa.site", "king.buzz", "ntspace.shop", "hulas.co", "aybukeaycaturna.shop", "alreadysa.shop", "housevar.es", "hotrokh.com", "maxseeding.com", "insidiousahmadi.biz", "gulasurakhman.net", "aenomail.com", "suryapasti.com", "nguyendanhkietisocial.com", "gasss.wtf", "mitrabisa.com", "allysa.online"];
+
+        // Data container for storing copied emails
+        const copiedEmails = [];
+
+        // Counter for button clicks
+        let clickCounter = 0;
+
+        // Elements
+        const generateButton = document.getElementById("generateBtn");
+        const generatedEmail = document.getElementById("generatedEmail");
+        const fileInput = document.getElementById("fileInput");
+
+        let names = [];
+
+        // Function to read names from the uploaded file
+        fileInput.addEventListener("change", (e) => {
+            const file = e.target.files[0];
+            if (file && file.type === "text/plain") {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    names = event.target.result.split("\n").map(line => line.trim()).filter(line => line);
+                    alert(`${names.length} names loaded from file!`);
+                    // Disable the file input after loading names
+                    fileInput.style.display = "none";
+                };
+                reader.readAsText(file);
+            } else {
+                alert("Please upload a valid text file.");
+            }
+        });
+
+        // Generate unique email
+        generateButton.addEventListener("click", () => {
+            if (names.length === 0 || domains.length === 0) {
+                generatedEmail.textContent = "No more unique emails can be generated.";
+                return;
+            }
+
+            // Increment the counter and update the button label
+            clickCounter++;
+            generateButton.textContent = `Generate (${clickCounter})`;
+
+            // Randomly pick one from the name and domain sets
+            const nameIndex = Math.floor(Math.random() * names.length);
+            const domainIndex = Math.floor(Math.random() * domains.length);
+
+            const name = names.splice(nameIndex, 1)[0];
+            const domain = domains.splice(domainIndex, 1)[0];
+
+            const email = `${name}@${domain}`;
+            generatedEmail.textContent = email;
+
+            const emailText = generatedEmail.textContent;
+            if (emailText === "No more unique emails can be generated.") return;
+
+            navigator.clipboard.writeText(emailText).catch(err => console.error("Error copying text: ", err));
+            if (!copiedEmails.includes(emailText)) {
+                copiedEmails.push(emailText);
+            }
+
+            if (copiedEmails.length === 0) {
+                alert("No emails to save.");
+                return;
+            }
+
+            const blob = new Blob([copiedEmails.join("\n")], { type: "text/plain" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+
+            a.href = url;
+            a.download = "generated_emails.txt";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hotel 101 PH & GLOBAL</title>
+  <style>
+    /* Resetting default styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #121212;
+      color: #e0e0e0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+      padding: 20px;
+      overflow: hidden;
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 15px;
+      text-transform: uppercase;
+      animation: fadeIn 1s ease-out;
+    }
+
+    p {
+      font-size: 1rem;
+      color: #ccc;
+      margin-bottom: 20px;
+    }
+
+    /* Main card container */
+    .card {
+      background: #1e1e1e;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      padding: 20px;
+      width: 100%;
+      max-width: 480px;
+      margin: 20px;
+      animation: slideIn 0.5s ease-out;
+    }
+
+    .card h2 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #e0e0e0;
+      margin-bottom: 10px;
+    }
+
+    .card p {
+      font-size: 0.9rem;
+      color: #b0b0b0;
+      line-height: 1.5;
+    }
+
+    /* File input and buttons */
+    #fileInput {
+      display: block;
+      margin: 20px auto;
+      padding: 12px;
+      border: none;
+      border-radius: 5px;
+      background-color: #009688;
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+      width: 100%;
+    }
+
+    #fileInput:hover {
+      background-color: #00796b;
+      transform: scale(1.05);
+    }
+
+    #processBtn {
+      padding: 12px 20px;
+      font-size: 1.1rem;
+      color: #fff;
+      background-color: #009688;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    #processBtn:hover {
+      background-color: #00796b;
+      transform: scale(1.05);
+    }
+
+    /* Progress bar */
+    #progressContainer {
+      width: 100%;
+      height: 8px;
+      background-color: #444;
+      border-radius: 5px;
+      margin-top: 20px;
+      display: none;
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    #progressBar {
+      height: 100%;
+      width: 0;
+      background-color: #009688;
+      border-radius: 5px;
+    }
+
+    #progressText {
+      font-size: 0.9rem;
+      color: #009688;
+      margin-top: 10px;
+    }
+
+    /* Donation section at the bottom */
+    #donation {
+      margin-top: 30px;
+      font-size: 1rem;
+      text-align: center;
+      color: #b0b0b0;
+    }
+
+    #donation span {
+      color: #009688;
+      cursor: pointer;
+      font-weight: 600;
+      text-decoration: underline;
+    }
+
+    footer {
+      margin-top: 50px;
+      font-size: 0.8rem;
+      color: #7f8c8d;
+      text-align: center;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateY(20px);
+      }
+      to {
+        transform: translateY(0);
+      }
+    }
+     .back-button {
+      background-color: #81c784; /* Softer green */
+      color: #ffffff;
+      padding: 6px 12px; /* Smaller button */
+      border-radius: 8px;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 12px;
+      width: 100px; /* Smaller width */
+      text-align: center;
+      transition: background-color 0.3s ease;
+    }
+
+    .back-button:hover {
+      background-color: #66bb6a; /* Slightly darker green on hover */
+    
+    
+  </style>
+</head>
+<body>
+<button class="back-button" onclick="window.location.href='index.html';">Back to Home</button> <!-- Back to index.html -->
+  
+  <!-- Main Card -->
+  <div class="card">
+    <h1>Hotel 101 PH & GLOBAL</h1>
+    <p>Screenshots to PDF</p>
+    <input type="file" id="fileInput" multiple accept="image/*">
+    <button id="processBtn">Start</button>
+
+    <!-- Progress Bar -->
+    <div id="progressContainer">
+      <div id="progressBar"></div>
+    </div>
+    <div id="progressText"></div>
+
+    <div id="output"></div>
+  </div>
+
+  <!-- Donation Section at the Bottom -->
+  <div id="donation">
+    <p>Buy me a coffee:</p>
+    <p><strong>Account Name:</strong> L***** B*****</p>
+    <p><strong>Mobile Number:</strong> <span id="copyNumber">09675522991</span> <span>(Gcash)</span></p>
+    <p>Click the number to copy to clipboard. Thank you for your support!</p>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    &copy; 2025 Hotel 101 PH & GLOBAL. All rights reserved.
+  </footer>
+
+  <!-- JavaScript Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.1.1/dist/tesseract.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+
+  <script>
+    const fileInput = document.getElementById("fileInput");
+    const processBtn = document.getElementById("processBtn");
+    const progressContainer = document.getElementById("progressContainer");
+    const progressBar = document.getElementById("progressBar");
+    const progressText = document.getElementById("progressText");
+    const outputDiv = document.getElementById("output");
+    const copyNumber = document.getElementById("copyNumber");
+
+    // Copy number to clipboard (without "(Gcash)")
+    copyNumber.addEventListener("click", () => {
+      const number = "09675522991";  // The number without "(Gcash)"
+      navigator.clipboard.writeText(number)
+        .then(() => alert("Number copied to clipboard!"))
+        .catch(err => alert("Failed to copy number."));
+    });
+
+    processBtn.addEventListener("click", async () => {
+      if (!fileInput.files.length) {
+        alert("Please select at least one image.");
+        return;
+      }
+
+      outputDiv.innerHTML = "";
+      progressContainer.style.display = "block";
+      progressBar.style.width = "0%";
+      progressText.textContent = "0%";
+
+      const files = Array.from(fileInput.files);
+      const totalFiles = files.length;
+      const extractedTexts = [];
+
+      for (let i = 0; i < totalFiles; i++) {
+        const file = files[i];
+        try {
+          const text = await extractTextFromImage(file);
+          const formattedText = extractSpecificPattern(text);
+          if (formattedText) extractedTexts.push(...formattedText.split("\n"));
+        } catch (err) {
+          console.error("Error processing file:", file.name, err);
+        }
+        // Update progress bar
+        const progress = ((i + 1) / totalFiles) * 100;
+        progressBar.style.width = `${progress}%`;
+        progressText.textContent = `${Math.round(progress)}%`;
+      }
+
+      progressContainer.style.display = "none";
+
+      if (extractedTexts.length > 0) {
+        generatePDF(extractedTexts);
+        outputDiv.innerHTML = "PDF file is ready for download.";
+      } else {
+        outputDiv.innerHTML = "No matching text patterns found.";
+      }
+    });
+
+    async function extractTextFromImage(file) {
+      const { data: { text } } = await Tesseract.recognize(file, "eng");
+      return text;
+    }
+
+    function extractSpecificPattern(text) {
+      const pattern = /=\d+=\w+=/g; // Adjust regex for your desired format
+      const matches = text.match(pattern);
+      return matches ? matches.join("\n") : null;
+    }
+
+    function generatePDF(texts) {
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF({ unit: "mm", format: "a4" }); // A4 size
+      const pageHeight = 297; // A4 height in mm
+      const lineHeight = 10;
+      const margin = 10;
+      const maxLinesPerPage = Math.floor((pageHeight - margin * 2) / lineHeight);
+      let yPosition = margin;
+
+      pdf.setFontSize(12);
+      pdf.text("Extracted Texts (Numbered List):", margin, yPosition);
+      yPosition += lineHeight;
+
+      texts.forEach((text, index) => {
+        if (yPosition > pageHeight - margin) {
+          pdf.addPage();
+          yPosition = margin;
+        }
+        pdf.text(`${index + 1}. ${text}`, margin, yPosition);
+        yPosition += lineHeight;
+      });
+
+      pdf.save("extracted_texts.pdf");
+    }
+  </script>
+
+</body>
+</html>

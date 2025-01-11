@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Iframe with Draggable Button</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+    iframe {
+      width: 100vw;
+      height: 100vh;
+      border: none;
+    }
+    .draggable-button {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background-color: #ff5722;
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+      text-align: center;
+      line-height: 50px;
+      cursor: grab;
+      user-select: none;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    .draggable-button:active {
+      cursor: grabbing;
+    }
+    .upload-container {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 10px;
+      border-radius: 5px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    .back-button {
+      background-color: #81c784; /* Softer green */
+      color: #ffffff;
+      padding: 6px 12px; /* Smaller button */
+      border-radius: 8px;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 12px;
+      width: 100px; /* Smaller width */
+      text-align: center;
+      transition: background-color 0.3s ease;
+    }
+
+    .back-button:hover {
+      background-color: #66bb6a; /* Slightly darker green on hover */
+    
+    
+  </style>
+</head>
+<body>
+     <button class="back-button" onclick="window.location.href='index.html';">Back to Home</button> <!-- Back to index.html -->
+  
+  <iframe src="https://otp.hothothot.workers.dev/"></iframe>
+  <div class="upload-container" id="uploadContainer">
+    <label for="emailFile">Upload Email File:</label>
+    <input type="file" id="emailFile" accept=".txt">
+  </div>
+  <div class="draggable-button" id="draggableButton" style="display: none;">0</div>
+
+  <script>
+    const emailFileInput = document.getElementById("emailFile");
+    const uploadContainer = document.getElementById("uploadContainer");
+    const button = document.getElementById("draggableButton");
+
+    let emails = [];
+    let emailIndex = 0;
+
+    emailFileInput.addEventListener("change", (event) => {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          emails = e.target.result.split(/\r?\n/).filter(email => email.trim() !== "");
+          if (emails.length > 0) {
+            button.textContent = emails.length;
+            button.style.display = "block";
+            uploadContainer.style.display = "none";
+          } else {
+            alert("No valid emails found in the file.");
+          }
+        };
+        reader.readAsText(file);
+      }
+    });
+
+    let isDragging = false;
+    let startX = 0;
+    let startY = 0;
+    let moved = false;
+
+    button.addEventListener("pointerdown", (e) => {
+      isDragging = true;
+      moved = false;
+      startX = e.clientX;
+      startY = e.clientY;
+      button.style.cursor = "grabbing";
+      button.setPointerCapture(e.pointerId);
+    });
+
+    button.addEventListener("pointermove", (e) => {
+      if (isDragging) {
+        const diffX = Math.abs(e.clientX - startX);
+        const diffY = Math.abs(e.clientY - startY);
+
+        if (diffX > 5 || diffY > 5) {
+          moved = true;
+          const newX = e.clientX - button.offsetWidth / 2;
+          const newY = e.clientY - button.offsetHeight / 2;
+          button.style.left = `${newX}px`;
+          button.style.top = `${newY}px`;
+        }
+      }
+    });
+
+    button.addEventListener("pointerup", (e) => {
+      isDragging = false;
+      button.style.cursor = "grab";
+      button.releasePointerCapture(e.pointerId);
+
+      if (!moved) {
+        if (emailIndex < emails.length) {
+          const email = emails[emailIndex];
+          navigator.clipboard.writeText(email);
+          emailIndex++;
+          button.textContent = emails.length - emailIndex;
+          if (emailIndex >= emails.length) {
+            button.textContent = "Done";
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

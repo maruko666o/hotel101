@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email & Code Processor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+            background-color: #121212; /* Dark background */
+            color: #B0B0B0; /* Soft gray text */
+        }
+        .hidden {
+            display: none;
+        }
+        button {
+            margin: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #333; /* Dark button background */
+            color: #D3D3D3; /* Lighter gray text */
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #555; /* Lighter dark button on hover */
+        }
+        label {
+            display: block;
+            margin: 15px 0;
+            font-size: 18px;
+            color: #D3D3D3; /* Light gray for labels */
+        }
+        textarea {
+            width: 80%;
+            height: 100px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            font-size: 16px;
+            background-color: #222; /* Dark textarea background */
+            color: #D3D3D3; /* Light gray text in textarea */
+            border: 1px solid #444; /* Dark border */
+            border-radius: 5px;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #666; /* Slightly lighter border on focus */
+        }
+        input[type="file"] {
+            margin: 10px 0;
+            color: #D3D3D3; /* Light gray for file input */
+        }
+        h1, h2 {
+            color: #E0E0E0; /* Slightly brighter gray for headings */
+        }
+        hr {
+            border: 0;
+            border-top: 1px solid #444; /* Dark separator line */
+            margin: 20px 0;
+        }
+        
+        .back-button {
+      background-color: #81c784; /* Softer green */
+      color: #ffffff;
+      padding: 6px 12px; /* Smaller button */
+      border-radius: 8px;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 12px;
+      width: 100px; /* Smaller width */
+      text-align: center;
+      transition: background-color 0.3s ease;
+    }
+
+    .back-button:hover {
+      background-color: #66bb6a; /* Slightly darker green on hover */
+    
+    
+        
+    </style>
+</head>
+<body>
+    <button class="back-button" onclick="window.location.href='index.html';">Back to Home</button> <!-- Back to index.html -->
+  
+    <h1>Email & Code Processor</h1>
+    <input type="file" id="emailFile" accept=".txt">
+    <input type="file" id="codeFile" accept=".txt">
+    <div id="buttonsContainer" class="hidden">
+        <h2>Emails</h2>
+        <button id="prevEmailBtn">Previous Email</button>
+        <button id="nextEmailBtn">Next Email</button>
+        <label id="emailCounter">Emails processed: 0</label>
+
+        <h2>Codes</h2>
+        <button id="prevCodeBtn">Previous Code</button>
+        <button id="nextCodeBtn">Next Code</button>
+        <label id="codeCounter">Codes processed: 0</label>
+    </div>
+    <hr>
+    <h2>Save or Import Your Own List of Codes</h2>
+    <textarea id="codeInput" placeholder="Enter your codes here, one per line..."></textarea>
+    <br>
+    <input type="file" id="importCodesFile" accept=".txt">
+    <button id="pasteCodesBtn">Paste Clipboard</button>
+    <button id="saveCodesBtn">Save Codes to File</button>
+
+    <script>
+        let emailList = [];
+        let codeList = [];
+        let emailIndex = -1; // Start before the first email
+        let codeIndex = -1;  // Start before the first code
+
+        const emailFileInput = document.getElementById('emailFile');
+        const codeFileInput = document.getElementById('codeFile');
+        const buttonsContainer = document.getElementById('buttonsContainer');
+        const prevEmailBtn = document.getElementById('prevEmailBtn');
+        const nextEmailBtn = document.getElementById('nextEmailBtn');
+        const emailCounter = document.getElementById('emailCounter');
+        const prevCodeBtn = document.getElementById('prevCodeBtn');
+        const nextCodeBtn = document.getElementById('nextCodeBtn');
+        const codeCounter = document.getElementById('codeCounter');
+        const codeInput = document.getElementById('codeInput');
+        const pasteCodesBtn = document.getElementById('pasteCodesBtn');
+        const saveCodesBtn = document.getElementById('saveCodesBtn');
+        const importCodesFile = document.getElementById('importCodesFile');
+
+        emailFileInput.addEventListener('change', handleFileUpload);
+        codeFileInput.addEventListener('change', handleFileUpload);
+
+        async function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const content = await file.text();
+                if (event.target.id === 'emailFile') {
+                    emailList = content.split('\n').map(line => line.trim()).filter(line => line);
+                } else if (event.target.id === 'codeFile') {
+                    codeList = content.split('\n').map(line => line.trim()).filter(line => line);
+                }
+            }
+            if (emailList.length > 0 && codeList.length > 0) {
+                emailFileInput.classList.add('hidden');
+                codeFileInput.classList.add('hidden');
+                buttonsContainer.classList.remove('hidden');
+            }
+        }
+
+        prevEmailBtn.addEventListener('click', () => navigateEmail(-1));
+        nextEmailBtn.addEventListener('click', () => navigateEmail(1));
+        prevCodeBtn.addEventListener('click', () => navigateCode(-1));
+        nextCodeBtn.addEventListener('click', () => navigateCode(1));
+
+        function navigateEmail(direction) {
+            if (direction === 1 && emailIndex < emailList.length - 1) {
+                emailIndex++;
+            } else if (direction === -1 && emailIndex > 0) {
+                emailIndex--;
+            }
+            copyToClipboard(emailList[emailIndex]);
+            emailCounter.textContent = `Emails processed: ${emailIndex + 1}`;
+        }
+
+        function navigateCode(direction) {
+            if (direction === 1 && codeIndex < codeList.length - 1) {
+                codeIndex++;
+            } else if (direction === -1 && codeIndex > 0) {
+                codeIndex--;
+            }
+            copyToClipboard(codeList[codeIndex]);
+            codeCounter.textContent = `Codes processed: ${codeIndex + 1}`;
+        }
+
+        async function copyToClipboard(text) {
+            try {
+                await navigator.clipboard.writeText(text);
+            } catch (err) {
+                alert('Failed to copy to clipboard. Please enable clipboard permissions.');
+            }
+        }
+
+        pasteCodesBtn.addEventListener('click', async () => {
+            try {
+                const clipboardText = await navigator.clipboard.readText();
+                codeInput.value += clipboardText.trim() + '\n';
+            } catch (err) {
+                alert('Failed to paste from clipboard. Please enable clipboard permissions.');
+            }
+        });
+
+        saveCodesBtn.addEventListener('click', () => {
+            const codes = codeInput.value.trim();
+            if (codes) {
+                const blob = new Blob([codes], { type: 'text/plain' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = 'codes.txt';
+                link.click();
+                URL.revokeObjectURL(link.href);
+            } else {
+                alert('Please enter some codes before saving.');
+            }
+        });
+
+        importCodesFile.addEventListener('change', async (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const content = await file.text();
+                codeInput.value = content.trim();
+            }
+        });
+    </script>
+</body>
+</html>

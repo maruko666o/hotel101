@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Email Link Generator</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body, html {
+      height: 100%;
+      width: 100%;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #121212;
+      color: #e0e0e0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      position: relative;
+    }
+
+    .container {
+      text-align: center;
+      background-color: #1e1e1e;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 500px;
+    }
+
+    button {
+      padding: 12px 24px;
+      background-color: #81c784; /* Softer green */
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background-color: #66bb6a; /* Slightly darker green on hover */
+      transform: scale(1.05);
+    }
+
+    button:disabled {
+      background-color: #9e9e9e;
+      cursor: not-allowed;
+    }
+
+    p {
+      font-size: 18px;
+      color: #e0e0e0;
+      margin-top: 10px;
+    }
+
+    .counter {
+      font-size: 22px;
+      font-weight: 600;
+      margin-top: 20px;
+      color: #bb86fc;
+    }
+
+    input[type="file"] {
+      margin: 15px 0;
+      padding: 10px;
+      background-color: #333;
+      color: #e0e0e0;
+      border: 2px solid #444; /* Softer border */
+      border-radius: 8px;
+      width: 100%;
+      max-width: 300px;
+    }
+
+    input[type="file"]:focus {
+      outline: none;
+      border-color: #6200ea; /* Lighter focus color */
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
+
+      button {
+        width: 100%;
+      }
+
+      input[type="file"] {
+        width: 100%;
+      }
+    }
+
+    .back-button {
+      background-color: #81c784; /* Softer green */
+      color: #ffffff;
+      padding: 6px 12px; /* Smaller button */
+      border-radius: 8px;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 12px;
+      width: 100px; /* Smaller width */
+      text-align: center;
+      transition: background-color 0.3s ease;
+    }
+
+    .back-button:hover {
+      background-color: #66bb6a; /* Slightly darker green on hover */
+    }
+
+  </style>
+</head>
+<body>
+  <button class="back-button" onclick="window.location.href='index.html';">Back to Home</button> <!-- Back to index.html -->
+  
+  <div class="container">
+    <div class="email-display">
+      <input type="file" id="email-file" accept=".txt">
+      <button id="next-email" disabled>Next Email</button>
+      <p id="email-link">Upload an email list to begin</p>
+      <p class="counter">Remaining Emails: <span id="email-count">0</span></p>
+    </div>
+  </div>
+
+  <script>
+    let emails = [];
+    let currentEmailIndex = 0;
+
+    const emailFileInput = document.getElementById("email-file");
+    const emailLinkElement = document.getElementById("email-link");
+    const nextEmailButton = document.getElementById("next-email");
+    const emailCountElement = document.getElementById("email-count");
+
+    emailFileInput.addEventListener("change", function(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const content = e.target.result;
+          emails = content.split("\n").filter(line => line.trim() !== "");
+          emailCountElement.textContent = emails.length; // Set the initial email count
+
+          if (emails.length > 0) {
+            emailLinkElement.textContent = "Email list loaded. Click 'Next Email' to begin.";
+            nextEmailButton.disabled = false;
+          } else {
+            emailLinkElement.textContent = "No valid emails found in the file.";
+            emailCountElement.textContent = "0"; // Reset counter if no valid emails
+          }
+        };
+        reader.readAsText(file);
+      }
+    });
+
+    function updateEmail() {
+      if (emails.length === 0) {
+        emailLinkElement.textContent = "Please upload a valid email list.";
+        return;
+      }
+
+      const currentEmail = emails[currentEmailIndex].trim();
+      emailLinkElement.textContent = currentEmail;
+
+      // Generate the link and open it in a new tab
+      const generatedLink = `https://generator.email/${currentEmail}`;
+      window.open(generatedLink, '_blank');
+
+      // Decrease the remaining email count
+      emails.splice(currentEmailIndex, 1); // Remove the current email from the list
+      emailCountElement.textContent = emails.length; // Update the remaining email count
+
+      // Move to the next email in the list, or reset if it's empty
+      if (emails.length === 0) {
+        emailLinkElement.textContent = "No more emails in the list.";
+        nextEmailButton.disabled = true; // Disable the button when no more emails
+      }
+    }
+
+    nextEmailButton.onclick = updateEmail;
+  </script>
+</body>
+</html>
