@@ -4,191 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hotel 101 PH & GLOBAL</title>
-  <style>
-    /* Resetting default styles */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: 'Roboto', sans-serif;
-      background-color: #121212;
-      color: #e0e0e0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      flex-direction: column;
-      padding: 20px;
-      overflow: hidden;
-    }
-
-    h1 {
-      font-size: 2rem;
-      font-weight: 700;
-      color: #fff;
-      margin-bottom: 15px;
-      text-transform: uppercase;
-      animation: fadeIn 1s ease-out;
-    }
-
-    p {
-      font-size: 1rem;
-      color: #ccc;
-      margin-bottom: 20px;
-    }
-
-    /* Main card container */
-    .card {
-      background: #1e1e1e;
-      border-radius: 15px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-      padding: 20px;
-      width: 100%;
-      max-width: 480px;
-      margin: 20px;
-      animation: slideIn 0.5s ease-out;
-    }
-
-    .card h2 {
-      font-size: 1.3rem;
-      font-weight: 600;
-      color: #e0e0e0;
-      margin-bottom: 10px;
-    }
-
-    .card p {
-      font-size: 0.9rem;
-      color: #b0b0b0;
-      line-height: 1.5;
-    }
-
-    /* File input and buttons */
-    #fileInput {
-      display: block;
-      margin: 20px auto;
-      padding: 12px;
-      border: none;
-      border-radius: 5px;
-      background-color: #009688;
-      color: #fff;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: background-color 0.3s ease, transform 0.3s ease;
-      width: 100%;
-    }
-
-    #fileInput:hover {
-      background-color: #00796b;
-      transform: scale(1.05);
-    }
-
-    #processBtn {
-      padding: 12px 20px;
-      font-size: 1.1rem;
-      color: #fff;
-      background-color: #009688;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background-color 0.3s ease, transform 0.3s ease;
-      width: 100%;
-      margin-top: 10px;
-    }
-
-    #processBtn:hover {
-      background-color: #00796b;
-      transform: scale(1.05);
-    }
-
-    /* Progress bar */
-    #progressContainer {
-      width: 100%;
-      height: 8px;
-      background-color: #444;
-      border-radius: 5px;
-      margin-top: 20px;
-      display: none;
-      animation: fadeIn 0.5s ease-out;
-    }
-
-    #progressBar {
-      height: 100%;
-      width: 0;
-      background-color: #009688;
-      border-radius: 5px;
-    }
-
-    #progressText {
-      font-size: 0.9rem;
-      color: #009688;
-      margin-top: 10px;
-    }
-
-    /* Donation section at the bottom */
-    #donation {
-      margin-top: 30px;
-      font-size: 1rem;
-      text-align: center;
-      color: #b0b0b0;
-    }
-
-    #donation span {
-      color: #009688;
-      cursor: pointer;
-      font-weight: 600;
-      text-decoration: underline;
-    }
-
-    footer {
-      margin-top: 50px;
-      font-size: 0.8rem;
-      color: #7f8c8d;
-      text-align: center;
-    }
-
-    /* Animations */
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-      }
-      to {
-        opacity: 1;
-      }
-    }
-
-    @keyframes slideIn {
-      from {
-        transform: translateY(20px);
-      }
-      to {
-        transform: translateY(0);
-      }
-    }
-     .back-button {
-      background-color: #81c784; /* Softer green */
-      color: #ffffff;
-      padding: 6px 12px; /* Smaller button */
-      border-radius: 8px;
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      font-size: 12px;
-      width: 100px; /* Smaller width */
-      text-align: center;
-      transition: background-color 0.3s ease;
-    }
-
-    .back-button:hover {
-      background-color: #66bb6a; /* Slightly darker green on hover */
-    
-    
-  </style>
+  <link rel="stylesheet" href="codePDF.css">
 </head>
 <body>
-<button class="back-button" onclick="window.location.href='index.html';">Back to Home</button> <!-- Back to index.html -->
+  <button class="back-button" onclick="window.location.href='index.html';">Back to Home</button> <!-- Back to index.html -->
   
   <!-- Main Card -->
   <div class="card">
@@ -204,13 +23,17 @@
     <div id="progressText"></div>
 
     <div id="output"></div>
+    
+    <!-- Editable Textfield -->
+    <textarea id="textField" rows="10" cols="50"></textarea>
+    <button id="saveToPDFBtn">Save to PDF</button>
   </div>
 
   <!-- Donation Section at the Bottom -->
-  <div id="donation">
-    <p>Buy me a coffee:</p>
+  <div id="donation" style="display: none;">
+    <p><strong>Finished! Donate any amount on Gcash:</strong></p>
     <p><strong>Account Name:</strong> L***** B*****</p>
-    <p><strong>Mobile Number:</strong> <span id="copyNumber">09675522991</span> <span>(Gcash)</span></p>
+    <p><strong>Mobile Number:</strong> <span id="copyNumber" style="cursor: pointer;">09675522991</span> <span>(Gcash)</span></p>
     <p>Click the number to copy to clipboard. Thank you for your support!</p>
   </div>
 
@@ -230,15 +53,37 @@
     const progressBar = document.getElementById("progressBar");
     const progressText = document.getElementById("progressText");
     const outputDiv = document.getElementById("output");
+    const textField = document.getElementById("textField");
+    const saveToPDFBtn = document.getElementById("saveToPDFBtn");
+    const donationDiv = document.getElementById("donation");
     const copyNumber = document.getElementById("copyNumber");
 
-    // Copy number to clipboard (without "(Gcash)")
+    // Copy number to clipboard
     copyNumber.addEventListener("click", () => {
-      const number = "09675522991";  // The number without "(Gcash)"
+      const number = "09675522991"; 
       navigator.clipboard.writeText(number)
         .then(() => alert("Number copied to clipboard!"))
         .catch(err => alert("Failed to copy number."));
     });
+
+    const quotes = [
+      "Removing duplicate screenshots...",
+      "Analyzing the screenshots...",
+      "Typing it for you...",
+      "Please wait, I'm working hard...",
+      "Consider donating on gcash to keep this site running...",
+      "If I can't analyze the some specific screenshot,",
+      " I will show it to you so you can edit manually..."
+    ];
+
+    let quoteIndex = 0;
+    let quoteInterval;
+
+    // Function to update the progress text with a quote every 5 seconds
+    function updateQuote() {
+      progressText.textContent = quotes[quoteIndex];
+      quoteIndex = (quoteIndex + 1) % quotes.length;
+    }
 
     processBtn.addEventListener("click", async () => {
       if (!fileInput.files.length) {
@@ -254,13 +99,23 @@
       const files = Array.from(fileInput.files);
       const totalFiles = files.length;
       const extractedTexts = [];
+      const invalidImages = [];
+
+      quoteInterval = setInterval(updateQuote, 5000); // Start updating quotes every 5 seconds
 
       for (let i = 0; i < totalFiles; i++) {
         const file = files[i];
         try {
           const text = await extractTextFromImage(file);
           const formattedText = extractSpecificPattern(text);
-          if (formattedText) extractedTexts.push(...formattedText.split("\n"));
+          if (formattedText) {
+            extractedTexts.push(...formattedText.split("\n"));
+          }
+
+          // Check if the text is invalid
+          if (formattedText && formattedText.length > 13) {
+            invalidImages.push(file); // Keep track of invalid images
+          }
         } catch (err) {
           console.error("Error processing file:", file.name, err);
         }
@@ -270,14 +125,43 @@
         progressText.textContent = `${Math.round(progress)}%`;
       }
 
+      clearInterval(quoteInterval); // Stop updating quotes when OCR is done
+      progressText.textContent = "Finished! Donate any amount on Gcash : 09675522991 L**** B****"; // Show "Done!" when the process is complete
+
       progressContainer.style.display = "none";
 
       if (extractedTexts.length > 0) {
-        generatePDF(extractedTexts);
-        outputDiv.innerHTML = "PDF file is ready for download.";
+        // Remove duplicates
+        const uniqueTexts = [...new Set(extractedTexts)];
+
+        // Validate and mark invalid codes
+        const validatedTexts = uniqueTexts.map((text, index) => {
+          if (text.length > 13) {
+            return `${index + 1}. ${text} encode manually, I'm wrong here, see the photo`;
+          }
+          return `${index + 1}. ${text}`;
+        });
+
+        // Display in the textarea
+        textField.value = validatedTexts.join("\n");
+
+        // Show images with invalid code
+        if (invalidImages.length > 0) {
+          invalidImages.forEach((image) => {
+            const imgElement = document.createElement("img");
+            imgElement.src = URL.createObjectURL(image);
+            imgElement.style.width = "100px";
+            imgElement.style.height = "auto";
+            outputDiv.appendChild(imgElement);
+          });
+        }
       } else {
-        outputDiv.innerHTML = "No matching text patterns found.";
+        outputDiv.innerHTML = "No codes found.";
+        progressText.textContent = "Manually Edit, I can't Analyze this Screenshot"; // Show error message for invalid images
       }
+
+      // Show donation section when OCR is done
+      donationDiv.style.display = "block";
     });
 
     async function extractTextFromImage(file) {
@@ -286,10 +170,19 @@
     }
 
     function extractSpecificPattern(text) {
-      const pattern = /=\d+=\w+=/g; // Adjust regex for your desired format
+      const pattern = /=\d+=\w+=/g;
       const matches = text.match(pattern);
       return matches ? matches.join("\n") : null;
     }
+
+    saveToPDFBtn.addEventListener("click", () => {
+      const texts = textField.value.split("\n");
+      if (texts.length > 0) {
+        generatePDF(texts);
+      } else {
+        alert("No text to save to PDF.");
+      }
+    });
 
     function generatePDF(texts) {
       const { jsPDF } = window.jspdf;
@@ -300,8 +193,8 @@
       const maxLinesPerPage = Math.floor((pageHeight - margin * 2) / lineHeight);
       let yPosition = margin;
 
-      pdf.setFontSize(12);
-      pdf.text("Extracted Texts (Numbered List):", margin, yPosition);
+      pdf.setFontSize(18);
+      pdf.text("Yum Codes:", margin, yPosition);
       yPosition += lineHeight;
 
       texts.forEach((text, index) => {
@@ -316,6 +209,5 @@
       pdf.save("extracted_texts.pdf");
     }
   </script>
-
 </body>
 </html>
